@@ -15,7 +15,7 @@ names(x)[5:40] <- c(1980:2015)
 data <- subset(x, select=-c(Country.Name, Series.Name))
 names(data)[1] <- "Country"
 mdata <- melt(data, id=c("Series.Code","Country"), variable.name="Year", value.name="Value")
-
+mdata$variable <- as.Date(mdata$variable, format="%Y")
 
 ### Plot 1
 p <- ggplot (
@@ -26,8 +26,8 @@ p + geom_line(aes(), size=2) +
     theme_bw() +
     ggtitle(plotList$Indicator.Name[1]) +
     labs(x="Year",y="") +
-    theme(text = element_text(size=20), axis.text.x = element_text(angle=90, vjust=1)) +
+    theme(text = element_text(size=20)) +
     scale_y_log10(labels=dollar) + # This creates a log scale for Plot 1 only
-    annotation_logticks(side = "l")  
-#    scale_x_continuous(limits=c(0,100), breaks=seq(1980,2015, by = 2))
+    annotation_logticks(side = "l")  +
+    scale_x_date(name = "Year", date_breaks = "4 years", date_labels = "%Y")
 

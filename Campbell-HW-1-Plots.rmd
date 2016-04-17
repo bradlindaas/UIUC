@@ -1,0 +1,268 @@
+---
+title: "Team Assignment: Data Exploration"
+author: "Team Campbell"
+date: "4/16/2016"
+output: pdf_document
+---
+
+
+```{r setup, echo=FALSE, message=FALSE}
+library(reshape)
+library(ggplot2)
+library(plyr)
+library(reshape)
+library(scales)
+
+x <- read.csv (
+    "Team-1-Data.csv", 
+    na.strings=c("NA","NaN", " ", "..") 
+    )
+
+plotList <- read.csv("Team-1-Definition-and-Source.csv")
+
+names(x)[5:40] <- c(1980:2015)
+data <- subset(x, select=-c(Country.Name, Series.Name))
+names(data)[1] <- "Country"
+mdata <- melt(data, id=c("Series.Code","Country"), variable.name="Year", value.name="Value")
+mdata$variable <- as.Date(mdata$variable, format="%Y")
+```
+
+# Team Membership
+
+* Madeline Augustin
+* Zifei Dai
+* Dennis Huffman
+* Brad Lindaas
+* Eric Midden
+* Meredith Wieck
+
+# Assignment Details
+
+## Purpose
+
+This assignment helped us become familiar with international data and information sources and make observations about economic development and investment conditions in different countries. Specifically, the countries compared here are China, Indonesia, and Korea.
+
+## Process
+
+Go to the World Bank's World dataBank website and select the “World Development Indicators and Global Development Finance” database. Extract the following data series for the countries in the sample for the years 1980-present and save them in an Excel file. For each variable, make a graph that compares the trends in the three countries since 1980. Note that some observations in dataset are missing. Those observations need to be blank in the worksheet; otherwise they will show up as zeros in graphs.
+
+Please paste the graphs that you make on pages labeled accordingly below (2 points each):
+
+1. GDP per capita, PPP (constant 2011 international $)  (For graph, please use log form of this variable.)
+1. Trade (% of GDP) (This is the sum of exports and imports as share of GDP.)
+1. External balance on goods and services (% of GDP) (or trade deficit)
+1. (Budget) Cash Surplus/Deficit (% of GDP)
+1. Gross capital formation (% of GDP) (Same as gross investment.)
+1. Foreign direct investment, net inflows (% of GDP)
+1. GDP per unit of energy use (constant 2011 PPP $ per kg of oil equivalent)
+1. Manufacturing, value added (% of GDP)
+
+\pagebreak
+
+# Plot 1
+
+```{r PLot1, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+### Plot 1
+p <- ggplot (
+    data = mdata[ which(mdata$Series.Code==plotList$Code[1]), ] 
+    ,aes(x = variable, y = value, color = Country, group = Country)
+)
+p + geom_line(aes(), size=2) +
+    theme_bw() +
+    ggtitle(plotList$Indicator.Name[1]) +
+    theme(text = element_text(size=10)) +
+    scale_y_log10(name="", labels=dollar) + # This creates a log scale for Plot 1 only
+    annotation_logticks(side = "l")  +
+    scale_x_date(name = "Year", date_breaks = "4 years", date_labels = "%Y") 
+```
+
+## Description
+
+`r plotList$Long.definition[1]`
+
+## Source
+
+`r plotList$Source[1]`
+
+\pagebreak
+
+# Plot 2
+
+```{r PLot2, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+### Plot 2
+p <- ggplot (
+    data = mdata[ which(mdata$Series.Code==plotList$Code[2]), ] 
+    ,aes(x = variable, y = value/100, color = Country, group = Country)
+)
+p + geom_line(aes(), size=2) +
+    theme_bw() +
+    ggtitle(plotList$Indicator.Name[2]) +
+    scale_y_continuous(name="",labels=percent) + 
+    theme(text = element_text(size=10)) +
+    scale_x_date(name = "Year", date_breaks = "4 years", date_labels = "%Y") 
+```
+
+## Description
+
+`r plotList$Long.definition[2]`
+
+## Source
+
+`r plotList$Source[2]`
+
+\pagebreak
+
+# Plot 3
+
+```{r PLot3, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+### Plot 3
+p <- ggplot (
+    data = mdata[ which(mdata$Series.Code==plotList$Code[3]), ] 
+    ,aes(x = variable, y = value/100, color = Country, group = Country)
+)
+p + geom_line(aes(), size=2) +
+    theme_bw() +
+    ggtitle(plotList$Indicator.Name[3]) +
+    scale_y_continuous(name="",labels=percent) + 
+    theme(text = element_text(size=10)) +
+    scale_x_date(name = "Year", date_breaks = "4 years", date_labels = "%Y") 
+```
+
+## Description
+
+`r plotList$Long.definition[3]`
+
+## Source
+
+`r plotList$Source[3]`
+
+\pagebreak
+
+# Plot 4
+
+```{r PLot4, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+### Plot 4
+p <- ggplot (
+    data = mdata[ which(mdata$Series.Code==plotList$Code[4]), ] 
+    ,aes(x = variable, y = value/100, color = Country, group = Country)
+)
+p + geom_line(aes(), size=2) +
+    theme_bw() +
+    ggtitle(plotList$Indicator.Name[4]) +
+    scale_y_continuous(name="",labels=percent) + 
+    theme(text = element_text(size=10)) +
+    scale_x_date(name = "Year", date_breaks = "4 years", date_labels = "%Y") 
+```
+
+## Description
+
+`r plotList$Long.definition[4]`
+
+## Source
+
+`r plotList$Source[4]`
+
+\pagebreak
+
+# Plot 5
+
+```{r PLot5, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+### Plot 5
+p <- ggplot (
+    data = mdata[ which(mdata$Series.Code==plotList$Code[5]), ] 
+    ,aes(x = variable, y = value/100, color = Country, group = Country)
+)
+p + geom_line(aes(), size=2) +
+    theme_bw() +
+    ggtitle(plotList$Indicator.Name[5]) +
+    scale_y_continuous(name="",labels=percent) + 
+    theme(text = element_text(size=10)) +
+    scale_x_date(name = "Year", date_breaks = "4 years", date_labels = "%Y") 
+```
+
+## Description
+
+`r plotList$Long.definition[5]`
+
+## Source
+
+`r plotList$Source[5]`
+
+\pagebreak
+
+# Plot 6
+
+```{r PLot6, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+### Plot 6
+p <- ggplot (
+    data = mdata[ which(mdata$Series.Code==plotList$Code[6]), ] 
+    ,aes(x = variable, y = value/100, color = Country, group = Country)
+)
+p + geom_line(aes(), size=2) +
+    theme_bw() +
+    ggtitle(plotList$Indicator.Name[6]) +
+    scale_y_continuous(name="",labels=percent) + 
+    theme(text = element_text(size=10)) +
+    scale_x_date(name = "Year", date_breaks = "4 years", date_labels = "%Y") 
+```
+
+## Description
+
+`r plotList$Long.definition[6]`
+
+## Source
+
+`r plotList$Source[6]`
+
+\pagebreak
+
+# Plot 7
+
+```{r PLot7, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+### Plot 7
+p <- ggplot (
+    data = mdata[ which(mdata$Series.Code==plotList$Code[7]), ] 
+    ,aes(x = variable, y = value, color = Country, group = Country)
+)
+p + geom_line(aes(), size=2) +
+    theme_bw() +
+    ggtitle(plotList$Indicator.Name[7]) +
+    theme(text = element_text(size=10)) +
+    scale_y_continuous(name="", labels=dollar) + # This creates a log scale for Plot 1 only
+    scale_x_date(name = "Year", date_breaks = "4 years", date_labels = "%Y") 
+```
+
+## Description
+
+`r plotList$Long.definition[7]`
+
+## Source
+
+`r plotList$Source[7]`
+
+\pagebreak
+
+# Plot 8
+
+```{r PLot8, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+### Plot 8
+p <- ggplot (
+    data = mdata[ which(mdata$Series.Code==plotList$Code[8]), ] 
+    ,aes(x = variable, y = value/100, color = Country, group = Country)
+)
+p + geom_line(aes(), size=2) +
+    theme_bw() +
+    ggtitle(plotList$Indicator.Name[8]) +
+    scale_y_continuous(name="",labels=percent) + 
+    theme(text = element_text(size=10)) +
+    scale_x_date(name = "Year", date_breaks = "4 years", date_labels = "%Y") 
+```
+
+## Description
+
+`r plotList$Long.definition[8]`
+
+## Source
+
+`r plotList$Source[8]`
+
