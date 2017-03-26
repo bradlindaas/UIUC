@@ -1,0 +1,136 @@
+---
+title: "AMRC"
+author: "Brad Lindaas"
+date: "3/25/2017"
+output: pdf_document
+---
+
+```{r, echo=FALSE}
+library(knitr)
+setwd('/home/rstudio/UIUC/')
+fname <- "AMRC.csv"
+AMRC <- read.csv(fname, header = TRUE)
+names(AMRC)[4]<-"CAGR_19"
+```
+
+# Appendix A: Monte Carlo Simulation
+
+## Background
+
+This analysis will examine the key inputs and outputs of our monte carlo simulation model to understand what likely ranges of price we can expect. The best way to stress test a valuation model is to use a Monte Carlo simulation to introduce variation in key market factors. In a Monte Carlo simulation, you run multiple simulations of the business model, changing key assumptions at random. In each simulation, the computer adds variation to the key assumptions in the model. The monte carlo analysis contains `r nrow(AMRC)` simulations of the model. Each key assumption into the model was subjected to variability using a random distribution with an assumed standard deviation. There are 4 total assumptions in the model. We ran a sensitivity analysis to determine the top assumption(s) that accounted for variation of in our valuation of Ameresco. 
+
+## Summary of Results
+
+
+Metric | Low (-1 std dev) | Average (mean value) | High (+1 std dev)
+--- | --- | --- | ---
+Stock Price | $`r round(mean(AMRC$Price) - sd(AMRC$Price),2)` | $`r round(mean(AMRC$Price),2)`| $`r round(mean(AMRC$Price) + sd(AMRC$Price),2)`
+Enterprise Value | $`r round(mean(AMRC$EV) - sd(AMRC$EV),0)` m | $`r round(mean(AMRC$EV),0)` m| $`r round(mean(AMRC$EV) + sd(AMRC$EV),0)` m
+
+### Stock Price
+
+What is the likelihood of an acceptable purchase price valuation? We need to determine if our valuation creates a viable result. The Board of Directors has indicated that they feel the stock should be priced at least $8.00. In the simulations, the model generates a valuation price of $8.00 over `r abs(round(((length(which(AMRC$Price > 8)) / length(AMRC$Price)))*100,1))`% of the time. The mean stock price of the simulation is $`r round(mean(AMRC$Price),2)` which is shown in red in the following graph. The graph also indicates +1 and -1 standard deviation from the mean in green. Using +/ 1 standard deviation as a guide, the stock price is likely in the following range:
+
+```{r Price-Plot, echo=FALSE}
+hist (
+  AMRC$Price,
+  main="Ameresco Valuation, Stock Price", 
+  xlab="Stock Price ($)", 
+  ylab="",
+  yaxt="n"
+)
+
+abline(v = mean(AMRC$Price), col = "red", lwd = 2, lty=2)
+abline(v = mean(AMRC$Price) + sd(AMRC$Price), col = "green", lwd = 2, lty=2)
+abline(v = mean(AMRC$Price) - sd(AMRC$Price), col = "green", lwd = 2, lty=2)
+```
+
+### Enterprise Value
+
+What is the likely offer range, for the Enterprise Value? This value includes our debt as well as market price of equity. In the simulations, the model generates a Enterprise Value of $550 m  over `r abs(round(((length(which(AMRC$EV > 550)) / length(AMRC$EV)))*100,1))`% of the time. The mean Enterprise Value of the simulation is $`r round(mean(AMRC$EV),2)` m which is shown in red in the following graph. The graph also indicates +1 and -1 standard deviation from the mean in green. Using +/ 1 standard deviation as a guide, the stock price is likely in the following range:
+
+```{r EV-Plot, echo=FALSE}
+hist (
+  AMRC$EV,
+  main="Ameresco Valuation, Enterprise Value", 
+  xlab="Total EV ($ m)", 
+  ylab="",
+  yaxt="n"
+)
+
+abline(v = mean(AMRC$EV), col = "red", lwd = 2, lty=2)
+abline(v = mean(AMRC$EV) + sd(AMRC$EV), col = "green", lwd = 2, lty=2)
+abline(v = mean(AMRC$EV) - sd(AMRC$EV), col = "green", lwd = 2, lty=2)
+```
+
+
+## Assumption Details
+
+The following charts provide the simulated range of assumptions used while testing the model, with the average value highlighted in red.
+
+
+* `WACC` - Our team calculated the most likely range of the weighted average cost of capital for Ameresco. But we do not have a precice number, only an estimate. Variation in WACC will change valuation, so we include WACC in the simulation model. The mean value (in red) is `r round(mean(AMRC$WACC)*100,2)`%
+
+```{r WACC-Plot, echo=FALSE}
+hist (
+  AMRC$WACC*100,
+  main="Range of Values for WACC", 
+  xlab="WACC (%)", 
+  ylab="",
+  yaxt="n"
+)
+
+abline(v = mean(AMRC$WACC*100), col = "red", lwd = 2, lty=2)
+abline(v = mean(AMRC$WACC*100) + sd(AMRC$WACC*100), col = "green", lwd = 2, lty=2)
+abline(v = mean(AMRC$WACC*100) - sd(AMRC$WACC*100), col = "green", lwd = 2, lty=2)
+```
+
+* `LT_CAGR` - In a discounted free cash flow (DFCF) valuation, you make an assumption on long term growth to create a terminal value. We used a conservative value of 2% of that, but variation of that assumption can swing the valuation so it is included. The mean value (in red) is `r round(mean(AMRC$LT_CAGR)*100,2)`%
+
+```{r LT_CAGR-Plot, echo=FALSE}
+hist (
+  AMRC$LT_CAGR*100,
+  main="Range of Values for Long Term Growth (Year 10+)", 
+  xlab="Growth (%)", 
+  ylab="",
+  yaxt="n"
+)
+
+abline(v = mean(AMRC$LT_CAGR*100), col = "red", lwd = 2, lty=2)
+abline(v = mean(AMRC$LT_CAGR*100) + sd(AMRC$LT_CAGR*100), col = "green", lwd = 2, lty=2)
+abline(v = mean(AMRC$LT_CAGR*100) - sd(AMRC$LT_CAGR*100), col = "green", lwd = 2, lty=2)
+```
+
+
+* `CAGR_19` - Capital IQ provided assumptions for the growth of free cash flow in 2017 and 2018. In order to create the valuation, we created a major assumption: 2019 will have a strong year of growth, and then growth will taper off after that. So the growth rate in 2019 is a major assumption that must be stress tested. The mean value (in red) is `r round(mean(AMRC$CAGR_19)*100,2)`%
+
+```{r CAGR_19, echo=FALSE}
+hist (
+  AMRC$CAGR_19*100,
+  main="Range of Values for Growth of FCF in 2019", 
+  xlab="Growth (%)", 
+  ylab="",
+  yaxt="n"
+)
+
+abline(v = mean(AMRC$CAGR_19*100), col = "red", lwd = 2, lty=2)
+abline(v = mean(AMRC$CAGR_19*100) + sd(AMRC$CAGR_19*100), col = "green", lwd = 2, lty=2)
+abline(v = mean(AMRC$CAGR_19*100) - sd(AMRC$CAGR_19*100), col = "green", lwd = 2, lty=2)
+```
+
+
+* `Decay` - No business can sustain high growth over the long term. So we used a power law curve to model the rate at which growth will taper off in the model. By creating variation in the exponent in the power law function, we can simulate a quick decrease in growth or a longer extention of growth. The mean value (in red) is `r round(mean(AMRC$Decay),2)`
+
+```{r Decay-Plot, echo=FALSE}
+hist (
+  AMRC$Decay,
+  main="Range of Values for Exponent of Decay", 
+  xlab="Exponent of Power Law Function", 
+  ylab="",
+  yaxt="n"
+)
+
+abline(v = mean(AMRC$Decay), col = "red", lwd = 2, lty=2)
+abline(v = mean(AMRC$Decay) + sd(AMRC$Decay), col = "green", lwd = 2, lty=2)
+abline(v = mean(AMRC$Decay) - sd(AMRC$Decay), col = "green", lwd = 2, lty=2)
+```
